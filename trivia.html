@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <style type="text/css">
+
+    body {
+      font-family: Arial;
+      background-color: #CFF09E;
+      color: #0B486B;
+
+    }
+    
+    #box {
+      padding-top: 40px;
+      margin: 0 auto;
+      width: 530px;
+      text-align: center;
+    }
+
+    #box div {
+      background-color: #3B8686;
+      padding: 10px;
+      width: 200px;
+      margin: 10px auto;
+      font-weight: 600;
+      border-radius: 25px;
+      color: #CFF09E;
+      cursor:pointer;
+    }
+    #czas {
+      margin-top: 20px;
+      text-align: center;
+      color: #DA1F2F;
+    }
+
+    #pkt {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    span {
+      font-size: 22px;
+    }
+
+    .reload {
+      background-color: #3B8686;
+      padding: 10px;
+      width: 200px;
+      margin: 10px auto;
+      font-weight: 600;
+      border-radius: 25px;
+      color: #CFF09E;
+      text-align: center;
+      cursor:pointer;
+    }
+
+    h2 {
+      padding-top:  20px;
+    }
+
+  </style>
+   <script src="jquery-1.11.0.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+    var score = 0;
+    var initialTime = 15;
+    var questionNumber = 0
+
+
+      $.ajax({
+        url: "trivia.json",
+        dataType: 'json'
+      })
+        .done(function (data) {
+
+          function nextQuestion() {
+          random = Math.ceil(Math.random() * data.length-1);
+          q = data[random];
+          data.splice(random, 1);
+
+
+          $('#box').append( '<h3>' + q['question'] + '</h3><br>' );
+          $('.pkt').text(score);
+          $('.time').text(initialTime);
+          questionNumber++;
+          seconds = initialTime;
+
+          if(questionNumber > 2) {
+            $('body').children().remove();
+            $('body').append( '<h2 id="pkt">Wygrałeś</h2><p id="pkt">Uzyskałeś ' + score + ' pkt' + '<div class="reload" onClick="document.location.reload(true)">Zagraj jeszcze raz</div>' );
+            clearInterval(game);
+
+          }
+
+          function odliczanie() {
+            seconds--;
+            $('.time').text(seconds);
+            if (seconds == 0) {
+              clearInterval(game);
+              $('#box').children().remove();
+              nextQuestion();
+          };
+          }                                                     // Koniec funkcji nextQuestion
+
+            for(var i=0; i<4; i++) {
+              $('#box').append( '<div id="odp'+ i +'">' + q['answers'][i]['ans'] + '</div>' );
+              $("#odp" + i).data("val", q['answers'][i]['value']); 
+            }
+            
+          game = setInterval(odliczanie, 1000);
+
+            $("#box div").on("click", function() {
+              if($( this ).data("val") == true) {
+                score++;
+                clearInterval(game);
+              }
+              else {
+                clearInterval(game);
+              }
+
+            $('#box').children().remove();
+             nextQuestion();
+
+            })
+          }
+
+          nextQuestion();
+
+    
+        })
+        .fail(function () {
+        console.log("error");
+
+
+
+        })
+
+    });
+  </script>
+  </head>
+  <body>
+
+   <div id='box'>
+   </div>
+   <div id='czas'>
+    <h4>Na odpowiedź pozostało: <span class="time"></span></h4>
+   </div>
+    <div id='pkt'>
+    <h4>Ilość punktów: <span class="pkt"></span></h4>
+   </div>
+
+
+  </body>
+  </html>
