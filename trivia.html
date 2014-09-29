@@ -86,7 +86,7 @@
           questionNumber++;
           seconds = initialTime;
 
-          if(questionNumber > 2) {
+          if(questionNumber > 10) {
             $('body').children().remove();
             $('body').append( '<h2 id="pkt">Wygrałeś</h2><p id="pkt">Uzyskałeś ' + score + ' pkt' + '<div class="reload" onClick="document.location.reload(true)">Zagraj jeszcze raz</div>' );
             clearInterval(game);
